@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>Your Books</h1>
+{% endblock %}
+{% block content %}
+    <form action="" method="post">
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>Author</td>
+                <td>Days Held</td>
+                <td>Action</td>
+            </tr>        
+            {% for book in books %}
+            <tr>
+                <td>{{ book["title"] }}</td>
+                <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
+                <td>*num days*</td>
+                {# Action #}
+                <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
+{% endblock %}

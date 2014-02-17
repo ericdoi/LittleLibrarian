@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <script type="text/javascript" src="/static/$(project).js"></script>
+    <link rel="stylesheet" href="/static/$(project).css" />
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <div id="loginHeader">
+    {% block loginHeader %}
+        {% if not session.logged_in %}
+            Not logged in. <a href={{ url_for('login') }}>Log in</a>
+        {% else %}
+            Logged in as {{ session["username"] }}. <a href={{ url_for('logout') }}>Log out</a>
+        {% endif %}
+    {% endblock %}</div>
+    <div id="header">{% block header %}<h1>Default Title</h1>{% endblock %}</div>
+    <div id="content">{% block content %}{% endblock %}</div>
+</body>
+</html>

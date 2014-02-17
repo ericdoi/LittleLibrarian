@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>Book List</h1>
+{% endblock %}
+{% block content %}
+    <form action="" method="post">
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>Author</td>
+                <td>Status</td>
+                <td>Action</td>
+            </tr>        
+            {% for book in books %}
+            <tr>
+                <td>{{ book["title"] }}</td>
+                <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
+                {# Status -- if already checked out by self, say "Already checked out"#} 
+                {% if book["heldBy"] is none %}
+                <td>Available</td>
+                {% else %}
+                <td>Checked out</td>
+                {% endif %}
+                {# Action #}
+                {% if book["heldBy"] is none %}
+                <td><button name="checkout" value={{ book["id"] }} type="submit">Check out</button></td>
+                {% elif book["heldBy"] == session["username"] %}
+                <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>
+                {% else %}
+                <td><button name="request" value={{ book["id"] }} type="submit">Request</button></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
+{% endblock %}
