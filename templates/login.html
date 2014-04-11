@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
+{% block title %} - Login{% endblock %}
+{% block header %}
+    <h2>Login</h2>
+{% endblock %}
 {% block content %}
-    <h1>Login</h1>
-    <form action="" method="post">
-        <p><input type=text name=Username>
-        <p><input type=submit value=Login>
-    </form>
+    {% if not session.logged_in %}
+        <p>Welcome to the Opera SD library database!
+        <p>New Users: Use the <a href={{ url_for("passwordReset") }}>Reset password</a> option to activate your account. 
+        <form action="" method="post">
+            <dl>
+                <dt>Username</dt>
+                    <dd><input type=text name=Username></dd>
+                <dt>Password</dt>
+                    <dd><input type=password name=Password></dd>
+            </dl>
+            <p><input type=submit value=Login>
+        </form>
+    {% else %}
+        Already logged in as {{ session["username"] }}. <a href={{ url_for('logout') }}>Log out</a>
+    {% endif %}
 {% endblock %}

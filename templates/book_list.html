@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% block title %} - Book List{% endblock %}
 {% block header %}
-    <h1>Book List</h1>
+    <h2>Book List</h2>
 {% endblock %}
 {% block content %}
     <form action="" method="post">
@@ -8,7 +9,7 @@
             <tr>
                 <td>Title</td>
                 <td>Author</td>
-                <td>Status</td>
+                <td>Held By</td>
                 <td>Action</td>
             </tr>        
             {% for book in books %}
@@ -19,7 +20,7 @@
                 {% if book["heldBy"] is none %}
                 <td>Available</td>
                 {% else %}
-                <td>Checked out</td>
+                <td>{{ book["heldBy"] }}</td>
                 {% endif %}
                 {# Action #}
                 {% if book["heldBy"] is none %}
@@ -27,7 +28,7 @@
                 {% elif book["heldBy"] == session["username"] %}
                 <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>
                 {% else %}
-                <td><button name="request" value={{ book["id"] }} type="submit">Request</button></td>
+                <td><button name="request" value={{ book["id"] }} type="submit">Send request email</button></td>
                 {% endif %}
             </tr>
             {% endfor %}

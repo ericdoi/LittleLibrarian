@@ -1,0 +1,2 @@
+sqlite3 sdLibrary.sqlite < createTables.sql
+sqlite3 sdLibrary.sqlite < populateSampleData.sql

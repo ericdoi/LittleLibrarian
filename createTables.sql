@@ -11,7 +11,7 @@ CREATE TABLE books (
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-    username text PRIMARY KEY,
+    username text PRIMARY KEY NOT NULL,
     password text,
     fName text,
     lName text,
