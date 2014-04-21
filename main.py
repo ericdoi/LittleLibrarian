@@ -107,7 +107,7 @@ def createNewUser(username, fName, lName, email):
     get_db().commit()
     success = sendPasswordEmail(username, password)
     if success:
-        flash('Sent email to %s with password'%(email))
+        flash('User created! Sent email to %s with password.'%(email))
     else:
         flash('Password email could not be sent. Please notify librarian.')
 
@@ -116,9 +116,22 @@ def doResetPassword(username):
     setPassword(username, password)
     success = sendPasswordEmail(username, password)
     if success:
-        flash('Sent email to %s with password'%(username))
+        flash('Sent email to %s with password.'%(username))
     else:
         flash('Password email could not be sent. Please notify librarian.')
+
+def sendCreationEmail(username, password):
+    query = 'SELECT email FROM users WHERE username = ?'
+    result = query_db(query, (username,), one=True)
+    toEmail = result['email']
+    subject = 'Opera SD Library Account Creation'
+    message = 'Welcome to the Opera SD Library system!\n\n'
+    message += 'Here is your new password for the Opera SD Library application:\n\n'
+    message += 'Username: %s\n'%(username)
+    message += 'Password: %s\n\n'%(password)
+    message += 'Thanks,\nSDOS Librarian'
+    success = sendMail([toEmail], [], [], subject, message)
+    return success
 
 def sendPasswordEmail(username, password):
     query = 'SELECT email FROM users WHERE username = ?'
@@ -126,8 +139,8 @@ def sendPasswordEmail(username, password):
     toEmail = result['email']
     subject = 'Opera SD Library Password Reset'
     message = 'Hello!\n\n'
-    message += 'Here is your new password for the Opera SD Library application:\n\n'
-    message += password + '\n\n'
+    message += 'Someone (hopefully you) has requested a password reset for your account on the Opera SD Library system.\n\n'
+    message += 'Your new password: %s\n\n'%(password)
     message += 'Thanks,\nSDOS Librarian'
     success = sendMail([toEmail], [], [], subject, message)
     return success
