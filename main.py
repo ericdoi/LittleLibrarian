@@ -1,7 +1,6 @@
 from flask import Flask, g, render_template, session, redirect, url_for, escape, request, flash
 import sqlite3
 import config as cfg
-import queries
 import os
 import hashlib
 import string, random
@@ -57,9 +56,11 @@ def per_request_callbacks(response):
 
 def sendMail(toEmails, ccEmails, bccEmails, subject, message):
  #   try:
-    #s = smtplib.SMTP(cfg.emailHost)
-    s = smtplib.SMTP_SSL(cfg.emailHost, 465)
-    s.login(cfg.emailSender, cfg.emailPwd)
+    if cfg.emailPwd is not None:
+        s = smtplib.SMTP_SSL(cfg.emailHost, 465)
+        s.login(cfg.emailSender, cfg.emailPwd)
+    else:
+        s = smtplib.SMTP(cfg.emailHost)
     msg = MIMEText(message)
     msg['Subject'] = subject
     msg['From'] = cfg.emailSender
@@ -113,10 +114,9 @@ def createNewUser(username, fName, lName, email):
 def doResetPassword(username):
     password = getRandomPassword()
     setPassword(username, password)
-    sendPasswordEmail(username, password)
     success = sendPasswordEmail(username, password)
     if success:
-        flash('Sent email to %s with password'%(email))
+        flash('Sent email to %s with password'%(username))
     else:
         flash('Password email could not be sent. Please notify librarian.')
 
