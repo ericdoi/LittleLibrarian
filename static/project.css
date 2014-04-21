@@ -12,4 +12,25 @@ h2 { font-size: 1.2em; }
 .flash { background: #cee5F5; padding: 0.5em;
          border: 1px solid #aacbe2; }
 
-
+table, th, td
+{
+    margin: 45px;
+    width: 720px;
+    border-collapse: collapse;
+    text-align: left;
+}
+th
+{
+    /*font-weight: normal;*/
+    padding: 10px 8px;
+    border-bottom: 2px solid #6678b1;
+}
+td
+{
+    border-bottom: 1px solid #ccc;
+    padding: 6px 8px;
+}
+tbody tr:hover td
+{
+    background: #dadafd;
+}
