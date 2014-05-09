@@ -37,6 +37,7 @@ def close_connection(exception):
         db.close()
 
 def query_db(query, args=(), one=False):
+    """DB query helper function."""
     cur = get_db().execute(query, args)
     rows = cur.fetchall()
     cur.close()
@@ -55,6 +56,7 @@ def per_request_callbacks(response):
     return response
 
 def sendMail(toEmails, ccEmails, bccEmails, subject, message):
+    """Send an email using the SMTP server in the config file."""
  #   try:
     if cfg.emailPwd is not None:
         s = smtplib.SMTP_SSL(cfg.emailHost, 465)
@@ -74,6 +76,7 @@ def sendMail(toEmails, ccEmails, bccEmails, subject, message):
 #        return False
 
 def getRandomPassword():
+    """Create a random alphanumeric password."""
     myrg = random.SystemRandom()
     length = 7
     alphabet = string.letters[0:52] + string.digits
@@ -81,18 +84,21 @@ def getRandomPassword():
     return pw
 
 def setPassword(username, password):
+    """Set the given password in the database."""
     passHash = hashlib.md5(password).hexdigest()
     query = 'UPDATE users SET password = ? WHERE username = ?'
     query_db(query, (passHash, username))
     get_db().commit()
 
 def checkPassword(username, password):
+    """Test whether the given user, password pair is correct."""
     passHash = hashlib.md5(password).hexdigest()
     query = 'SELECT password FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     return passHash == result['password']
 
 def checkUserExists(username):
+    """Check whether given username has an entry in the DB."""
     query = 'SELECT * FROM users WHERE username = ?'
     result = query_db(query, (username,))
     if len(result) > 0:
@@ -101,6 +107,7 @@ def checkUserExists(username):
         return False
     
 def createNewUser(username, fName, lName, email):
+    """Create a new user in the DB."""
     password = getRandomPassword()
     query = 'INSERT INTO users (username, password, fName, lName, email) VALUES (?,?,?,?,?)'
     query_db(query, (username, password, fName, lName, email))
@@ -112,6 +119,7 @@ def createNewUser(username, fName, lName, email):
         flash('Password email could not be sent. Please notify librarian.')
 
 def doResetPassword(username):
+    """Reset password for the given user and send an email."""
     password = getRandomPassword()
     setPassword(username, password)
     success = sendPasswordEmail(username, password)
@@ -121,6 +129,7 @@ def doResetPassword(username):
         flash('Password email could not be sent. Please notify librarian.')
 
 def sendCreationEmail(username, password):
+    """Send an email for creation of a new user."""
     query = 'SELECT email FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     toEmail = result['email']
@@ -134,6 +143,7 @@ def sendCreationEmail(username, password):
     return success
 
 def sendPasswordEmail(username, password):
+    """Send an email for a password reset."""
     query = 'SELECT email FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     toEmail = result['email']
@@ -146,12 +156,14 @@ def sendPasswordEmail(username, password):
     return success
 
 def doBookCheckout(username, bookId):
+    """Update the DB for a book checkout."""
     checkoutQuery = 'UPDATE books SET heldBy = ? WHERE id = ?'
     query_db(checkoutQuery, (username, bookId))
     get_db().commit()
     flash('You got it! (Book #%s)'%(bookId))
 
 def doBookRequest(username, bookId):
+    """Send a book request email."""
     success = sendRequestEmail(username, bookId)
     if success:
         flash("Request email sent! (You'll get a copy.)")
@@ -159,6 +171,7 @@ def doBookRequest(username, bookId):
         flash('Request email could not be sent.')
 
 def sendRequestEmail(username, bookId):
+    """Send an email for requesting a book from another user."""
     query = 'SELECT email FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     requesterEmail = result['email']
@@ -180,6 +193,7 @@ def sendRequestEmail(username, bookId):
     return success
 
 def doBookReturn(bookId):
+    """Update DB to return given book."""
     returnQuery = 'UPDATE books SET heldBy = NULL WHERE id = ?'
     query_db(returnQuery, (bookId,))
     get_db().commit()
@@ -218,9 +232,9 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
-# Reset password. If the account doesn't exist, create it.
 @app.route('/passwordreset', methods=['GET','POST'])
 def passwordReset():
+    """Display reset password page. If the account doesn't exist, create it."""
     if request.method == 'POST':
         username = request.form['Email']
         if checkUserExists(username):
@@ -230,9 +244,9 @@ def passwordReset():
         return redirect(url_for('login'))
     return render_template('password_reset.html')
 
-# Display all books and allow checkout, request, or return
 @app.route('/booklist', methods=['GET','POST'])
 def bookList():
+    """Display all books and allow checkout/return etc."""
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     if request.method == 'POST':
@@ -246,10 +260,9 @@ def bookList():
     result = query_db(allListQuery)
     return render_template('book_list.html', books=result)
 
-
-# Display and return books currently checked out
 @app.route('/mybooks', methods=['GET','POST'])
 def myBooks():
+    """Display and return books currently checked out by the user."""
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     if request.method == 'POST':
