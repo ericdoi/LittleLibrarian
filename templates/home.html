@@ -10,14 +10,14 @@
     <ol>
         <li><b><a href={{ url_for("passwordReset") }}>Create</a> your account</b> and log in. It should keep you logged in unless you reset your browser.</li>
         <li><b>Update the records:</b>  If you currently have books checked out on the paper form in the library, find them on the <a href={{ url_for("bookList")}}>Book List</a> and either check them out, or claim them if they have been reported as missing.</li>
-        <li><b>Check out books:</b>
+        <li><b><a href={{ url_for("bookList")}}>Check out books</a>:</b>
             <ul>
                 <li><b>Standard check-out:</b>  If you see a book is available, look for it in the library room. If you find it, check it out from the system and enjoy!</li>
                 <li><b>Report missing books:</b>  If a book was marked as available but you weren't able to find it, you can report it as missing. Once it has been found, you'll receive a notification.</li>
                 <li><b>Request checked-out books:</b>  If you want a book someone else has checked out, you can send a request email to them and work it out like civilized people. An email gets sent every time, so please don't spam the Request button. :)</li>
             </ul>
         </li>
-        <li><b>Check in books:</b>
+        <li><b><a href={{ url_for("myBooks") }}>Check in books</a>:</b>
             <ul>
                 <li><b>Standard check-in:</b>  You can view all books you have currently checked out on the <a href={{ url_for("myBooks") }}>Your Books</a> page. If your book is here, simply check it in and place it back on the library shelves.</li>
                 <li><b>Claim missing books:</b> We all forget sometimes. If your book wasn't checked out properly in the system, find it in the <a href={{ url_for("bookList")}}>Book List</a> and see if someone reported it as missing. If so, make sure to claim it first to clear the record, then check it back in as usual. If not, you can just sneak the book back in the library and no one will know. :)</li>
