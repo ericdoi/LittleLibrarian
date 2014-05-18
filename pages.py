@@ -54,10 +54,14 @@ def bookList():
     if request.method == 'POST':
         if 'checkout' in request.form:
             doBookCheckout(session['username'], request.form['checkout'])
-        elif 'request' in request.form:
-            doBookRequest(session['username'], request.form['request'])
+        elif 'missing' in request.form:
+            doBookMissingReport(session['username'], request.form['missing'])
+        elif 'claim' in request.form:
+            doBookClaim(session['username'], request.form['claim'])
         elif 'return' in request.form:
             doBookReturn(request.form['return'])
+        elif 'request' in request.form:
+            doBookRequest(session['username'], request.form['request'])
     allListQuery = 'SELECT id, title, authorFName, authorLName, heldBy FROM books'
     result = query_db(allListQuery)
     return render_template('book_list.html', books=result)
@@ -79,4 +83,21 @@ def myBooks():
                       WHERE heldBy = ?"""
     result = query_db(myBooksQuery, (session['username'],))
     return render_template('my_books.html', books=result)
+
+@app.route('/missingbooks', methods=['GET','POST'])
+def missingBooks():
+    """Display and claim books that have been reported as missing."""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        if 'claim' in request.form:
+            doBookClaim(session['username'], request.form['claim'])
+    
+    missingBooksQuery = """SELECT bk.*
+                           , reportedMissingBy
+                           FROM books bk
+                           INNER JOIN checkouts co ON (checkoutId = co.id)
+                           WHERE heldBy = ?"""
+    result = query_db(missingBooksQuery, ("MISSING",))
+    return render_template('missing_books.html', books=result)
 

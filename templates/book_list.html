@@ -16,19 +16,26 @@
             <tr>
                 <td>{{ book["title"] }}</td>
                 <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
-                {# Status -- if already checked out by self, say "Already checked out"#} 
+                
+                {# Status #} 
                 {% if book["heldBy"] is none %}
                 <td>Available</td>
                 {% else %}
                 <td>{{ book["heldBy"] }}</td>
                 {% endif %}
+                
                 {# Action #}
                 {% if book["heldBy"] is none %}
-                <td><button name="checkout" value={{ book["id"] }} type="submit">Check out</button></td>
+                <td>
+                    <button name="checkout" value={{ book["id"] }} type="submit">Check out</button>
+                    <button name="missing" value={{ book["id"] }} type="submit">Report missing</button>
+                </td> 
+                {% elif book["heldBy"] == "MISSING" %}
+                <td><button name="claim" value={{ book["id"] }} type="submit">I have this</button></td>
                 {% elif book["heldBy"] == session["username"] %}
                 <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>
                 {% else %}
-                <td><button name="request" value={{ book["id"] }} type="submit">Send request email</button></td>
+                <td><button name="request" value={{ book["id"] }} type="submit">Send request</button></td>
                 {% endif %}
             </tr>
             {% endfor %}

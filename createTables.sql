@@ -7,7 +7,8 @@ CREATE TABLE books (
     authorLName text,
     publishDate date,
     heldBy text,
-    checkoutId INTEGER
+    checkoutId INTEGER,
+    reportedMissingBy text
 );
 
 DROP TABLE IF EXISTS users;
