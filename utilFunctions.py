@@ -5,6 +5,7 @@ import hashlib
 import string, random
 from emailFunctions import *
 from dbFunctions import *
+import datetime as dt
 
 def after_this_request(func):
     if not hasattr(g, 'call_after_request'):
@@ -73,8 +74,12 @@ def doResetPassword(username):
 
 def doBookCheckout(username, bookId):
     """Update the DB for a book checkout."""
-    checkoutQuery = 'UPDATE books SET heldBy = ? WHERE id = ?'
-    query_db(checkoutQuery, (username, bookId))
+    coQuery = """INSERT INTO checkouts
+                 (bookId, uName, dateOut) VALUES (?, ?, ?)"""
+    checkoutId = insert_db(coQuery, (bookId, username, dt.date.today() ))
+    upQuery = """UPDATE books
+                 SET heldBy = ?, checkoutId = ? WHERE id = ?"""
+    query_db(upQuery, (username, checkoutId, bookId) )
     get_db().commit()
     flash('You got it! (Book #%s)'%(bookId))
 
@@ -88,7 +93,13 @@ def doBookRequest(username, bookId):
 
 def doBookReturn(bookId):
     """Update DB to return given book."""
-    returnQuery = 'UPDATE books SET heldBy = NULL WHERE id = ?'
+    getCoIdQuery = 'SELECT checkoutId FROM books WHERE id = ?'
+    coIdRow = query_db(getCoIdQuery, (bookId,), one=True)
+    checkinQuery = 'UPDATE checkouts SET dateIn = ? WHERE id = ?'
+    query_db(checkinQuery, (dt.date.today(), coIdRow['checkoutId']))
+    returnQuery = """UPDATE books 
+                     SET heldBy = NULL, checkoutId = NULL WHERE id = ?"""
     query_db(returnQuery, (bookId,))
     get_db().commit()
-    flash('Return has been processed! (Book #%s) Please leave the book in the library.'%(bookId))
+    flash(('Return has been processed! (Book #%s) '
+           'Please leave the book in the library.')%(bookId))

@@ -6,7 +6,8 @@ CREATE TABLE books (
     authorFName text,
     authorLName text,
     publishDate date,
-    heldBy text
+    heldBy text,
+    checkoutId INTEGER
 );
 
 DROP TABLE IF EXISTS users;
@@ -26,5 +27,6 @@ CREATE TABLE checkouts (
     dateOut date NOT NULL,
     dateIn date
 );
+CREATE INDEX book_user ON checkouts ( bookId, uName );
 
 

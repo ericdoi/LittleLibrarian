@@ -71,7 +71,12 @@ def myBooks():
         if 'return' in request.form:
             doBookReturn(request.form['return'])
     
-    myBooksQuery = 'SELECT id, title, authorFName, authorLName FROM books WHERE heldBy = ?'
+    myBooksQuery = """SELECT bk.*
+                      , julianday(date("now")) -
+                        julianday(dateOut) as numDays
+                      FROM books bk
+                      INNER JOIN checkouts co ON (checkoutId = co.id)
+                      WHERE heldBy = ?"""
     result = query_db(myBooksQuery, (session['username'],))
     return render_template('my_books.html', books=result)
 

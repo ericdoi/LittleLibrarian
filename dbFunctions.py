@@ -25,3 +25,13 @@ def query_db(query, args=(), one=False):
     rows = cur.fetchall()
     cur.close()
     return (rows[0] if rows else None) if one else rows
+
+def insert_db(query, values=()):
+    """DB insert and commit helper function."""
+    cur = get_db().cursor()
+    cur.execute(query, values)
+    get_db().commit()
+    id = cur.lastrowid
+    cur.close()
+    return id
+

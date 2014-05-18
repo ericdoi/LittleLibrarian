@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ book["title"] }}</td>
                 <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
-                <td>*num days*</td>
+                <td>{{ book["numDays"]|int }}</td>
                 {# Action #}
                 <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>
             </tr>
