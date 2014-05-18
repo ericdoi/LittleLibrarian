@@ -3,7 +3,7 @@ h1, h2 { font-family: helvetica; margin: 0; }
 h1 { border-bottom: 2px solid #eee; }
 h2 { font-size: 1.2em; }
 
-.page { margin: 2em auto; width: 50em; 
+.page { margin: 2em auto; width: 60em; 
         /*border: 5px solid #ccc;*/
         padding: 0.8em; background: white; }
 .loginHeader { text-align: right; font-size: 0.8em;
@@ -12,23 +12,48 @@ h2 { font-size: 1.2em; }
 .flash { background: #cee5F5; padding: 0.5em;
          border: 1px solid #aacbe2; }
 
+.sitenav
+{
+   margin: 10px;
+}
+.sitenav ul
+{ 
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+}
+.sitenav li
+{
+    float:left;
+}
+.sitenav a
+{
+    display:block; 
+    width:120px;
+    background-color:#EEEEEE;
+    border:1px solid #FFFFFF;
+    text-align:center;
+    font-weight:bold;
+}
+
 table, th, td
 {
     margin: 45px;
-    width: 720px;
+    width: 854px;
     border-collapse: collapse;
     text-align: left;
 }
 th
 {
     /*font-weight: normal;*/
-    padding: 10px 8px;
+    padding: 10px 5px;
     border-bottom: 2px solid #6678b1;
 }
 td
 {
     border-bottom: 1px solid #ccc;
-    padding: 6px 8px;
+    padding: 6px 5px;
 }
 tbody tr:hover td
 {

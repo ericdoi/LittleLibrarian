@@ -5,8 +5,11 @@
 <div class=page>
     <h1>Opera SD Library Database</h1>
     <div class=sitenav>
-       <a href={{ url_for('bookList') }}>Book List</a>
-       <a href={{ url_for('myBooks') }}>Your Books</a>
+        <ul>
+           <li><a href={{ url_for('bookList') }}>Book List</a></li>
+           <li><a href={{ url_for('myBooks') }}>Your Books</a></li>
+           <li><a href={{ url_for('missingBooks') }}>Missing</a></li>
+        </ul>
     </div>
     <div class=loginHeader>
     {% block loginHeader %}
