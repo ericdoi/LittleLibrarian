@@ -6,9 +6,11 @@ from utilFunctions import *
 
 @app.route('/')
 def index():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    return redirect(url_for('bookList'))
+    return redirect(url_for('home'))
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
