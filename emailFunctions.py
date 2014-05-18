@@ -72,3 +72,53 @@ def sendRequestEmail(username, bookId):
     message += 'Thanks!\nSDOS Librarian'
     success = sendMail([ownerEmail], [requesterEmail], [], subject, message)
     return success
+
+def sendMissingEmail(fromUser, bookId):
+    """Send an email to the librarian to report a missing book."""
+    query = 'SELECT email FROM users WHERE username = ?'
+    result = query_db(query, (fromUser,), one=True)
+    requesterEmail = result['email']
+    
+    query = 'SELECT * FROM books WHERE id = ?'
+    result = query_db(query, (bookId,), one=True)
+    title = result['title']
+    authorFName = result['authorFName']
+    authorLName = result['authorLName']
+
+    subject = 'Opera SD Library Missing Report'
+    message = 'Hello!\n\n'
+    message += 'Thanks for reporting the following book as missing:\n\n'
+    message += '%s, %s:  %s\n\n'%(authorLName, authorFName, title)
+    message += 'If a user claims the book, you will receive an email notification. Or, if I find the book, I will let you know.\n\n'
+    message += 'Thanks!\nSDOS Librarian'
+    success = sendMail([requesterEmail], [cfg.emailSender], [], subject, message)
+    return success
+
+def sendFoundEmail(claimUser, bookId):
+    """Send an email to the reporter if a missing book is claimed."""
+    #query = 'SELECT email FROM users WHERE username = ?'
+    #result = query_db(query, (claimUser,), one=True)
+    #claimEmail = result['email']
+    
+    query = 'SELECT books.*, users.email FROM books INNER JOIN users ON reportedMissingBy = username WHERE id = ?'
+    result = query_db(query, (bookId,), one=True)
+    if result is None:
+        return False
+
+    title = result['title']
+    authorFName = result['authorFName']
+    authorLName = result['authorLName']
+    reporterUser = result['reportedMissingBy']
+    reporterEmail = result['email']
+
+    if reporterUser == claimUser:
+        return False # No point in notifying
+
+    subject = 'Opera SD Library Found Book Notification'
+    message = 'Hello!\n\n'
+    message += 'The following book, which you reported as missing, has been claimed by user %s:\n\n'%(claimUser)
+    message += '%s, %s:  %s\n\n'%(authorLName, authorFName, title)
+    message += 'If you are still interested in the book, please check the status on the website. If it has not been returned yet, you can use the website to send a request email.\n\n'
+    message += 'Thanks!\nSDOS Librarian'
+    success = sendMail([reporterEmail], [], [], subject, message)
+    return success

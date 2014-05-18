@@ -53,8 +53,9 @@ def checkUserExists(username):
 def createNewUser(username, fName, lName, email):
     """Create a new user in the DB."""
     password = getRandomPassword()
+    passHash = hashlib.md5(password).hexdigest()
     query = 'INSERT INTO users (username, password, fName, lName, email) VALUES (?,?,?,?,?)'
-    query_db(query, (username, password, fName, lName, email))
+    query_db(query, (username, passHash, fName, lName, email))
     get_db().commit()
     success = sendPasswordEmail(username, password)
     if success:
@@ -90,7 +91,9 @@ def bookInTransaction(bookId):
     checkinQuery = 'UPDATE checkouts SET dateIn = ? WHERE id = ?'
     query_db(checkinQuery, (dt.date.today(), coIdRow['checkoutId']))
     returnQuery = """UPDATE books 
-                     SET heldBy = NULL, checkoutId = NULL WHERE id = ?"""
+                     SET heldBy = NULL, checkoutId = NULL
+                     , reportedMissingBy = NULL 
+                     WHERE id = ?"""
     query_db(returnQuery, (bookId,))
     get_db().commit()
 
@@ -102,16 +105,20 @@ def doBookCheckout(username, bookId):
 def doBookClaim(username, bookId):
     """Update the DB when a missing book is claimed. 
        Close the missing report and re-checkout."""
+    # Notify reporter BEFORE wiping the record
+    sendFoundEmail(username, bookId)
     bookInTransaction(bookId) 
     bookOutTransaction(username, bookId)
-    # TODO: Notify reporter
-    flash('Thanks! Mystery solved. Please check the book in when you are done with it. (Book #%s)'%(bookId))
+    flash( ('Thanks! Mystery solved. Please check the book in when you are '
+            'done with it. (Book #%s)')%(bookId) )
 
 def doBookMissingReport(username, bookId):
     """Update the DB for a book being reported missing."""
-    bookOutTransaction("MISSING", bookId, username)
-    # TODO: Notify librarian
-    flash("Thanks for the tip. The librarian will be notified, and if someone claims the book, you'll receive an email notification.")
+    bookOutTransaction("MISSING", bookId, reportedMissingBy=username)
+    # Notify librarian
+    sendMissingEmail(username, bookId)
+    flash( ("Thanks for the tip. The librarian will be notified, and if someone "
+            "claims the book, you'll receive an email notification.") )
 
 def doBookReturn(bookId):
     """Update DB to return given book."""

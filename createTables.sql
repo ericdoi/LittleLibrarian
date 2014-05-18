@@ -5,11 +5,16 @@ CREATE TABLE books (
     title text NOT NULL,
     authorFName text,
     authorLName text,
+    productUrl text,
     publishDate date,
+    acquireDate date,
+    location text,
     heldBy text,
     checkoutId INTEGER,
     reportedMissingBy text
 );
+CREATE INDEX borrower ON books ( heldBy );
+
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
