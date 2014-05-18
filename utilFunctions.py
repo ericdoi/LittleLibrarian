@@ -72,16 +72,52 @@ def doResetPassword(username):
     else:
         flash('Password email could not be sent. Please notify librarian.')
 
-def doBookCheckout(username, bookId):
-    """Update the DB for a book checkout."""
+def bookOutTransaction(username, bookId, reportedMissingBy=None):
+    """General checkout action."""
     coQuery = """INSERT INTO checkouts
                  (bookId, uName, dateOut) VALUES (?, ?, ?)"""
     checkoutId = insert_db(coQuery, (bookId, username, dt.date.today() ))
     upQuery = """UPDATE books
-                 SET heldBy = ?, checkoutId = ? WHERE id = ?"""
-    query_db(upQuery, (username, checkoutId, bookId) )
+                 SET heldBy = ?, checkoutId = ?, reportedMissingBy = ? 
+                 WHERE id = ?"""
+    query_db(upQuery, (username, checkoutId, reportedMissingBy, bookId) )
     get_db().commit()
+
+def bookInTransaction(bookId):
+    """General checkin action."""
+    getCoIdQuery = 'SELECT checkoutId FROM books WHERE id = ?'
+    coIdRow = query_db(getCoIdQuery, (bookId,), one=True)
+    checkinQuery = 'UPDATE checkouts SET dateIn = ? WHERE id = ?'
+    query_db(checkinQuery, (dt.date.today(), coIdRow['checkoutId']))
+    returnQuery = """UPDATE books 
+                     SET heldBy = NULL, checkoutId = NULL WHERE id = ?"""
+    query_db(returnQuery, (bookId,))
+    get_db().commit()
+
+def doBookCheckout(username, bookId):
+    """Update the DB for a book checkout."""
+    bookOutTransaction(username, bookId)
     flash('You got it! (Book #%s)'%(bookId))
+
+def doBookClaim(username, bookId):
+    """Update the DB when a missing book is claimed. 
+       Close the missing report and re-checkout."""
+    bookInTransaction(bookId) 
+    bookOutTransaction(username, bookId)
+    # TODO: Notify reporter
+    flash('Thanks! Mystery solved. Please check the book in when you are done with it. (Book #%s)'%(bookId))
+
+def doBookMissingReport(username, bookId):
+    """Update the DB for a book being reported missing."""
+    bookOutTransaction("MISSING", bookId, username)
+    # TODO: Notify librarian
+    flash("Thanks for the tip. The librarian will be notified, and if someone claims the book, you'll receive an email notification.")
+
+def doBookReturn(bookId):
+    """Update DB to return given book."""
+    bookInTransaction(bookId)
+    flash(('Return has been processed! (Book #%s) '
+           'Please leave the book in the library.')%(bookId))
 
 def doBookRequest(username, bookId):
     """Send a book request email."""
@@ -91,15 +127,3 @@ def doBookRequest(username, bookId):
     else:
         flash('Request email could not be sent.')
 
-def doBookReturn(bookId):
-    """Update DB to return given book."""
-    getCoIdQuery = 'SELECT checkoutId FROM books WHERE id = ?'
-    coIdRow = query_db(getCoIdQuery, (bookId,), one=True)
-    checkinQuery = 'UPDATE checkouts SET dateIn = ? WHERE id = ?'
-    query_db(checkinQuery, (dt.date.today(), coIdRow['checkoutId']))
-    returnQuery = """UPDATE books 
-                     SET heldBy = NULL, checkoutId = NULL WHERE id = ?"""
-    query_db(returnQuery, (bookId,))
-    get_db().commit()
-    flash(('Return has been processed! (Book #%s) '
-           'Please leave the book in the library.')%(bookId))
