@@ -7,21 +7,23 @@
     <form action="" method="post">
         <table>
             <tr>
-                <th>Title</th>
+                <th class="title">Title</th>
                 <th>Author</th>
                 <th>Held By</th>
                 <th>Action</th>
             </tr>        
-            {% for book in books %}
+            {% for (book, authorStr, heldByStr) in books %}
             <tr>
-                <td>{{ book["title"] }}</td>
-                <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
+                <td class="title">{{ book["title"] }}</td>
+                <td>{{ authorStr }}</td>
                 
                 {# Status #} 
                 {% if book["heldBy"] is none %}
-                <td>Available</td>
+                <td><span class="available">AVAILABLE</span></td>
+                {% elif book["heldBy"] == "MISSING" %}
+                <td><span class="missing">{{ heldByStr }}</span></td>
                 {% else %}
-                <td>{{ book["heldBy"] }}</td>
+                <td><span class="heldBy">{{ heldByStr }}</span></td>
                 {% endif %}
                 
                 {# Action #}

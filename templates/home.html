@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
     <p>Welcome to the Opera SD library database!
-    
+    <br></br> 
     <h3>Getting Started</h3>
     <ol>
         <li><b><a href={{ url_for("passwordReset") }}>Create</a> your account</b> and log in. It should keep you logged in unless you reset your browser.</li>
@@ -26,10 +26,12 @@
         <li><b>Give feedback:</b> If you find any bugs or have any suggestions, please let your friendly neighborhood librarian know. If you'd like to contribute, check out <a href="https://github.com/ericdoi/LittleLibrarian">the code</a>. Thanks!</li>
     </ol>
 
+    <br></br>
     <h3>Future Improvements</h3>
     <ul>
         <li><b>Shelf locations:</b> Keep track of which shelf each book is kept on, using a location identifier in the database. This will make finding books a lot easier.</li>
         <li><b>Book metadata:</b> Add more book metadata like author, date acquired to the library, a link to the Amazon product page, etc..</li>
+        <li><b>List sorting:</b> Once metadata is populated, allow sorting by various fields. </li>
         <li><b>New books:</b> Should have a "new books" list or announcement page.</li>
     </ul>
     <p>

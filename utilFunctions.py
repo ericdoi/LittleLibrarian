@@ -134,3 +134,25 @@ def doBookRequest(username, bookId):
     else:
         flash('Request email could not be sent.')
 
+def getAuthorStrs(rows):
+    """Form LName, FName author strings unless they are null."""
+    authorStrs = []
+    for row in rows:
+        if None not in (row['authorFName'], row['authorLName']):
+            authorStr = row['authorLName'] + ', ' + row['authorFName']
+        else:
+            authorStr = ''
+        authorStrs.append(authorStr)
+    return authorStrs
+
+def getUserStrs(rows, field):
+    """Truncate emails to username unless they are null."""
+    userStrs = []
+    for row in rows:
+        if field in row.keys() and row[field] is not None:
+            userStr = row[field].split('@')[0]
+        else:
+            userStr = ''
+        userStrs.append(userStr)
+    return userStrs
+

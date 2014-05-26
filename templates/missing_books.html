@@ -8,16 +8,16 @@
     <form action="" method="post">
         <table>
             <tr>
-                <th>Title</th>
+                <th class="title">Title</th>
                 <th>Author</th>
                 <th>Reported by</th>
                 <th>Action</th>
             </tr>        
-            {% for book in books %}
+            {% for (book, authorStr, reportedByStr) in books %}
             <tr>
-                <td>{{ book["title"] }}</td>
-                <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
-                <td>{{ book["reportedMissingBy"] }}</td>
+                <td class="title">{{ book["title"] }}</td>
+                <td>{{ authorStr }}</td>
+                <td>{{ reportedByStr }}</td>
                 {# Action #}
                 <td><button name="claim" value={{ book["id"] }} type="submit">I have this</button></td>
             </tr>

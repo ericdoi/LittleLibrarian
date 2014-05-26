@@ -7,15 +7,15 @@
     <form action="" method="post">
         <table>
             <tr>
-                <th>Title</th>
+                <th class="title">Title</th>
                 <th>Author</th>
                 <th>Days Held</th>
                 <th>Action</th>
             </tr>        
-            {% for book in books %}
+            {% for (book, authorStr) in books %}
             <tr>
-                <td>{{ book["title"] }}</td>
-                <td>{{ book["authorLName"] + ", " + book["authorFName"] }}</td>
+                <td class="title">{{ book["title"] }}</td>
+                <td>{{ authorStr }}</td>
                 <td>{{ book["numDays"]|int }}</td>
                 {# Action #}
                 <td><button name="return" value={{ book["id"] }} type="submit">Return</button></td>

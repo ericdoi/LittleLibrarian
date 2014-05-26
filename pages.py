@@ -1,6 +1,19 @@
 from flask import render_template, session, redirect, url_for, escape, request, flash
 from main import app
 from utilFunctions import *
+import os
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.static_folder, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 ##### Page Routes ####
 
@@ -66,7 +79,9 @@ def bookList():
             doBookRequest(session['username'], request.form['request'])
     allListQuery = 'SELECT id, title, authorFName, authorLName, heldBy FROM books'
     result = query_db(allListQuery)
-    return render_template('book_list.html', books=result)
+    authorStrs = getAuthorStrs(result)
+    heldByStrs = getUserStrs(result, 'heldBy')
+    return render_template('book_list.html', books=zip(result, authorStrs, heldByStrs))
 
 @app.route('/mybooks', methods=['GET','POST'])
 def myBooks():
@@ -84,7 +99,8 @@ def myBooks():
                       INNER JOIN checkouts co ON (checkoutId = co.id)
                       WHERE heldBy = ?"""
     result = query_db(myBooksQuery, (session['username'],))
-    return render_template('my_books.html', books=result)
+    authorStrs = getAuthorStrs(result)
+    return render_template('my_books.html', books=zip(result, authorStrs))
 
 @app.route('/missingbooks', methods=['GET','POST'])
 def missingBooks():
@@ -101,5 +117,7 @@ def missingBooks():
                            INNER JOIN checkouts co ON (checkoutId = co.id)
                            WHERE heldBy = ?"""
     result = query_db(missingBooksQuery, ("MISSING",))
-    return render_template('missing_books.html', books=result)
+    authorStrs = getAuthorStrs(result)
+    reportedByStrs = getUserStrs(result, 'reportedMissingBy')
+    return render_template('missing_books.html', books=zip(result, authorStrs, reportedByStrs))
 

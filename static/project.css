@@ -40,12 +40,16 @@ h2 { font-size: 1.3em; }
 
 li
 {
-    padding:5px 0px;
+    padding:0.5em 0em 0.5em 0em;
+}
+table
+{
+    margin: 45px;
+    table-layout: fixed;
+    width: 854px;
 }
 table, th, td
 {
-    margin: 45px;
-    width: 854px;
     border-collapse: collapse;
     text-align: left;
 }
@@ -63,4 +67,25 @@ td
 tbody tr:hover td
 {
     background: #dadafd;
+}
+th.title, td.title
+{
+    width:325px;
+}
+span.available
+{
+    /*color:#006600;*/
+    background-color:#CCFFCC;
+    font-weight:bold;
+}
+span.missing
+{
+    /*color:#990000;*/
+    background-color:#FFCCCC;
+    font-weight:bold;
+}
+span.heldBy
+{
+    background-color:#FFFF99;
+    /*font-weight:bold;*/
 }
