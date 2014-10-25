@@ -4,6 +4,8 @@ import smtplib
 from email.mime.text import MIMEText
 from dbFunctions import *
 
+siteName = 'LittleLibrarian'
+
 def sendMail(toEmails, ccEmails, bccEmails, subject, message):
     """Send an email using the SMTP server in the config file."""
  #   try:
@@ -29,12 +31,12 @@ def sendCreationEmail(username, password):
     query = 'SELECT email FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     toEmail = result['email']
-    subject = 'Opera SD Library Account Creation'
-    message = 'Welcome to the Opera SD Library system!\n\n'
-    message += 'Here is your new password for the Opera SD Library application:\n\n'
+    subject = '%s Account Creation'%(siteName)
+    message = 'Welcome to the %s system!\n\n'%(siteName)
+    message += 'Here is your new password for the %s application:\n\n'%(siteName)
     message += 'Username: %s\n'%(username)
     message += 'Password: %s\n\n'%(password)
-    message += 'Thanks,\nSDOS Librarian'
+    message += 'Thanks,\nYour Librarian'
     success = sendMail([toEmail], [], [], subject, message)
     return success
 
@@ -43,11 +45,11 @@ def sendPasswordEmail(username, password):
     query = 'SELECT email FROM users WHERE username = ?'
     result = query_db(query, (username,), one=True)
     toEmail = result['email']
-    subject = 'Opera SD Library Password Reset'
+    subject = '%s Password Reset'%(siteName)
     message = 'Hello!\n\n'
-    message += 'Someone (hopefully you) has requested a password reset for your account on the Opera SD Library system.\n\n'
+    message += 'Someone (hopefully you) has requested a password reset for your account on the %s system.\n\n'%(siteName)
     message += 'Your new password: %s\n\n'%(password)
-    message += 'Thanks,\nSDOS Librarian'
+    message += 'Thanks,\nYour Librarian'
     success = sendMail([toEmail], [], [], subject, message)
     return success
 
@@ -64,12 +66,12 @@ def sendRequestEmail(username, bookId):
     authorLName = result['authorLName']
     ownerEmail = result['email']
 
-    subject = 'Opera SD Library Book Request'
+    subject = '%s Book Request'%(siteName)
     message = 'Hello!\n\n'
     message += 'User %s has requested the following book:\n\n'%(username)
     message += '%s, %s:  %s\n\n'%(authorLName, authorFName, title)
     message += 'Please let him/her know once you are finished with the book and have returned it to the library. Or, even better, discuss options for sharing or taking turns if possible.\n\n'
-    message += 'Thanks!\nSDOS Librarian'
+    message += 'Thanks!\nYour Librarian'
     success = sendMail([ownerEmail], [requesterEmail], [], subject, message)
     return success
 
@@ -85,12 +87,12 @@ def sendMissingEmail(fromUser, bookId):
     authorFName = result['authorFName']
     authorLName = result['authorLName']
 
-    subject = 'Opera SD Library Missing Report'
+    subject = '%s Missing Report'(siteName)
     message = 'Hello!\n\n'
     message += 'Thanks for reporting the following book as missing:\n\n'
     message += '%s, %s:  %s\n\n'%(authorLName, authorFName, title)
     message += 'If a user claims the book, you will receive an email notification. Or, if I find the book, I will let you know.\n\n'
-    message += 'Thanks!\nSDOS Librarian'
+    message += 'Thanks!\nYour Librarian'
     success = sendMail([requesterEmail], [cfg.emailSender], [], subject, message)
     return success
 
@@ -114,11 +116,11 @@ def sendFoundEmail(claimUser, bookId):
     if reporterUser == claimUser:
         return False # No point in notifying
 
-    subject = 'Opera SD Library Found Book Notification'
+    subject = '%s Found Book Notification'%(siteName)
     message = 'Hello!\n\n'
     message += 'The following book, which you reported as missing, has been claimed by user %s:\n\n'%(claimUser)
     message += '%s, %s:  %s\n\n'%(authorLName, authorFName, title)
     message += 'If you are still interested in the book, please check the status on the website. If it has not been returned yet, you can use the website to send a request email.\n\n'
-    message += 'Thanks!\nSDOS Librarian'
+    message += 'Thanks!\nYour Librarian'
     success = sendMail([reporterEmail], [], [], subject, message)
     return success
