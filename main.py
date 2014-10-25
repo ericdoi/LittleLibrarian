@@ -17,5 +17,5 @@ app.config.update(dict(
 from pages import *
 
 if __name__ == '__main__':
-    app.run(debug=True)
-        
+    app.run() # Caution if using debug=True!
+

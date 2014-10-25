@@ -1,6 +1,6 @@
-dbPath = 'sdLibrary.sqlite'
+dbPath = 'library.sqlite'
 
-emailHost = ''
-emailPwd = ''
-emailSender = ''
+emailHost = '' # IP or hostname of SMTP server
+emailPwd = '' # Password, if required
+emailSender = '' # Email address to use as sender
 

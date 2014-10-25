@@ -1,3 +1,4 @@
+/* Initialize DB tables */
 
 DROP TABLE IF EXISTS books;
 CREATE TABLE books (
@@ -14,7 +15,6 @@ CREATE TABLE books (
     reportedMissingBy text
 );
 CREATE INDEX borrower ON books ( heldBy );
-
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
